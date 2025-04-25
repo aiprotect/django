@@ -6,4 +6,6 @@ class GitHubView(View):
     def get(self, request):
         return render(request, 'github/test.html')
 
-
+class SisterView(View):
+    def get(self, request):
+        return render(request, 'github/sister.html')
