@@ -1,92 +1,111 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حدیث | صفحه VIP</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <title>ULTIMATE GIRLY VIDEO PLAYER</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.7.0/dist/vanilla-tilt.min.js"></script>
     <style>
         :root {
-            --pink: #ff9ff3;
-            --rose: #fd79a8;
-            --gold: #feca57;
-            --purple: #5f27cd;
-            --white: #fff6f6;
+            --primary: #ff2d75;
+            --secondary: #ff8fab;
+            --glow: 0 0 30px rgba(255, 45, 117, 0.7);
         }
         
         body {
             margin: 0;
-            background: linear-gradient(45deg, var(--pink), var(--rose));
+            overflow: hidden;
+            background: #0f0f1a;
             font-family: 'Poppins', sans-serif;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--white);
+            perspective: 1000px;
         }
         
-        .video-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            border: 15px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
-            border-radius: 20px;
+        #scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
         }
         
-        .hadith-name {
+        .holo-container {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 10vw;
-            font-family: 'Dancing Script', cursive;
-            color: rgba(255, 255, 255, 0.1);
-            z-index: 0;
-            white-space: nowrap;
+            width: 80vw;
+            height: 80vh;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--glow), 
+                        inset 0 0 100px rgba(255, 141, 171, 0.3);
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
-        .content {
+        .liquid-overlay {
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle at center, 
+                      rgba(255, 45, 117, 0.3) 0%, 
+                      transparent 70%);
+            animation: liquidFlow 15s infinite alternate;
+            mix-blend-mode: overlay;
+        }
+        
+        @keyframes liquidFlow {
+            0% { transform: translate(-25%, -25%) rotate(0deg); }
+            100% { transform: translate(-15%, -15%) rotate(5deg); }
+        }
+        
+        .video-wrapper {
             position: relative;
-            z-index: 10;
-            text-align: center;
-            padding: 20px;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(
+                5% 0%, 95% 0%, 100% 5%, 
+                100% 95%, 95% 100%, 5% 100%, 
+                0% 95%, 0% 5%
+            );
         }
         
-        h1 {
-            font-size: 5rem;
-            margin: 0;
-            background: linear-gradient(45deg, var(--gold), var(--white));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(1.1) contrast(1.1);
         }
         
-        .play-btn {
-            background: linear-gradient(45deg, var(--purple), var(--rose));
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.5rem;
-            border-radius: 50px;
+        .neon-ui {
+            position: absolute;
+            bottom: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+        
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(15, 15, 26, 0.7);
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 15px var(--primary);
             color: white;
+            font-size: 24px;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             transition: all 0.3s;
-            margin-top: 30px;
+            display: grid;
+            place-items: center;
         }
         
-        .play-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-        }
-        
-        /* انیمیشن‌های ویژه */
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        .control-btn:hover {
+            transform: scale(1.2) translateY(-10px);
+            box-shadow: 0 0 30px var(--primary);
         }
         
         .floating-elements {
@@ -96,67 +115,176 @@
             pointer-events: none;
         }
         
-        .floating-elements div {
+        .floating-element {
             position: absolute;
             background-size: contain;
             background-repeat: no-repeat;
-            animation: float 6s ease-in-out infinite;
             opacity: 0.7;
+            filter: drop-shadow(0 0 10px var(--primary));
+            animation: float 15s infinite linear;
         }
         
-        /* المان‌های تزئینی */
-        .heart { background-image: url('data:image/svg+xml;utf8,<svg fill="%23fd79a8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'); }
-        .star { background-image: url('data:image/svg+xml;utf8,<svg fill="%23feca57" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>'); }
-        .diamond { background-image: url('data:image/svg+xml;utf8,<svg fill="%23fff6f6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 3H5L2 9l10 12L22 9l-3-6zM9.62 8l1.5-3h1.76l1.5 3H9.62zM11 10v6.68L5.44 10H11zm2 0h5.56L13 16.68V10zm6.26-2h-2.65l-1.5-3h2.65l1.5 3zM6.24 5h2.65l-1.5 3H4.74l1.5-3z"/></svg>'); }
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-50px) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+        
+        .audio-visualizer {
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 3px;
+        }
+        
+        .bar {
+            width: 4px;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 2px;
+            transition: height 0.1s;
+        }
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <!-- المان‌های شناور -->
-        <div class="floating-elements" id="floating-elements"></div>
-        
-        <!-- نام حدیث به صورت واترمارک -->
-        <div class="hadith-name">Hadith</div>
-        
-        <!-- محتوای اصلی -->
-        <div class="content">
-            <h1>حدیث زیبا</h1>
-            <p>این صفحه ویژه برای شما طراحی شده است</p>
-            <button class="play-btn">پخش ویدیوی من</button>
+    <div id="scene"></div>
+    
+    <div class="holo-container" data-tilt data-tilt-max="5" data-tilt-speed="400">
+        <div class="liquid-overlay"></div>
+        <div class="video-wrapper">
+            <video id="mainVideo" src="your-video.mp4" poster="holographic-poster.jpg"></video>
         </div>
+        
+        <div class="floating-elements" id="floatingElements"></div>
+        
+        <div class="neon-ui">
+            <div class="control-btn" onclick="togglePlay()">▶</div>
+            <div class="control-btn" onclick="toggleFullscreen()">⛶</div>
+            <div class="control-btn" onclick="toggleEffects()">✨</div>
+        </div>
+        
+        <div class="audio-visualizer" id="visualizer"></div>
     </div>
 
     <script>
-        // ایجاد المان‌های شناور
-        const floatingContainer = document.getElementById('floating-elements');
-        const elements = ['heart', 'star', 'diamond'];
-        const colors = ['#fd79a8', '#feca57', '#fff6f6'];
+        // Three.js Particle System
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('scene').appendChild(renderer.domElement);
         
-        for (let i = 0; i < 30; i++) {
-            const element = document.createElement('div');
-            const type = elements[Math.floor(Math.random() * elements.length)];
-            element.className = type;
+        // Create sparkle particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particleCount = 2000;
+        
+        const posArray = new Float32Array(particleCount * 3);
+        for(let i = 0; i < particleCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 10;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.02,
+            color: 0xff8fab,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+        
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+        
+        camera.position.z = 2;
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
             
-            // تنظیمات موقعیت و اندازه
-            element.style.width = `${Math.random() * 30 + 10}px`;
-            element.style.height = element.style.width;
+            particlesMesh.rotation.x += 0.0005;
+            particlesMesh.rotation.y += 0.0005;
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+        
+        // Floating elements generator
+        const floatingContainer = document.getElementById('floatingElements');
+        const elements = ['❤', '✿', '★', '✦', '❀', '✧'];
+        
+        for(let i = 0; i < 15; i++) {
+            const element = document.createElement('div');
+            element.className = 'floating-element';
+            element.textContent = elements[Math.floor(Math.random() * elements.length)];
             element.style.left = `${Math.random() * 100}%`;
             element.style.top = `${Math.random() * 100}%`;
-            element.style.animationDelay = `${Math.random() * 5}s`;
-            element.style.animationDuration = `${Math.random() * 10 + 5}s`;
-            
+            element.style.fontSize = `${Math.random() * 20 + 10}px`;
+            element.style.animationDuration = `${Math.random() * 20 + 10}s`;
             floatingContainer.appendChild(element);
         }
         
-        // شبیه‌سازی پخش ویدیو
-        document.querySelector('.play-btn').addEventListener('click', function() {
-            this.textContent = 'در حال پخش...';
-            this.style.background = 'linear-gradient(45deg, #ff9ff3, #5f27cd)';
-            
-            // اینجا می‌توانید ویدیوی واقعی را بارگذاری کنید
-            setTimeout(() => {
-                alert('ویدیوی اختصاصی حدیث در حال پخش است!');
-            }, 1000);
+        // Audio visualizer
+        const visualizer = document.getElementById('visualizer');
+        for(let i = 0; i < 100; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            visualizer.appendChild(bar);
+        }
+        
+        // Mock audio analysis (in real project use Web Audio API)
+        function updateVisualizer() {
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach(bar => {
+                bar.style.height = `${Math.random() * 50 + 10}px`;
+            });
+            requestAnimationFrame(updateVisualizer);
+        }
+        updateVisualizer();
+        
+        // Video controls
+        const video = document.getElementById('mainVideo');
+        
+        function togglePlay() {
+            if(video.paused) {
+                video.play();
+                document.querySelector('.control-btn:nth-child(1)').textContent = '❚❚';
+            } else {
+                video.pause();
+                document.querySelector('.control-btn:nth-child(1)').textContent = '▶';
+            }
+        }
+        
+        function toggleFullscreen() {
+            if(!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+        
+        function toggleEffects() {
+            document.querySelector('.holo-container').classList.toggle('extra-effects');
+        }
+        
+        // Make container interactive
+        VanillaTilt.init(document.querySelector(".holo-container"), {
+            max: 5,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.2,
+        });
+        
+        // Responsive design
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
     </script>
 </body>
